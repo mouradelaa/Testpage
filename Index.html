@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Question</title>
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f7f7f7;
+      font-family: Arial, sans-serif;
+    }
+    .box {
+      position: relative;
+      text-align: center;
+      width: 300px;
+      height: 200px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 22px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    #no {
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Do you agree?</h2>
+    <button onclick="alert('Good choice 😌')">Yes</button>
+    <button id="no">No</button>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("no");
+    const box = document.querySelector(".box");
+
+    noBtn.addEventListener("mouseenter", () => {
+      const maxX = box.clientWidth - noBtn.offsetWidth;
+      const maxY = box.clientHeight - noBtn.offsetHeight;
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top = Math.random() * maxY + "px";
+    });
+  </script>
+</body>
+</html>
