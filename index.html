@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Important Question</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Evil Button</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       height: 100vh;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      background: #0f0f0f;
+      color: white;
     }
 
     .container {
@@ -28,118 +22,155 @@
     }
 
     h1 {
-      margin-top: 80px;
-      font-size: 2.2rem;
+      margin-top: 60px;
+      font-size: 1.9rem;
     }
 
     button {
-      font-size: 20px;
-      padding: 14px 28px;
+      font-size: 22px;
+      padding: 14px 32px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
     }
 
     #yes {
-      background: #4CAF50;
-      color: white;
+      background: #2ecc71;
+      color: black;
+      margin-top: 40px;
     }
 
     #no {
       position: absolute;
       background: #e74c3c;
       color: white;
+      transition: transform 0.15s;
     }
 
-    canvas {
+    .taunt {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      opacity: 0.15;
+      animation: fade 2s ease-in-out;
       pointer-events: none;
+    }
+
+    @keyframes fade {
+      0% { opacity: 0; }
+      50% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    /* Final screen */
+    .final {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .final-text {
+      font-size: 2.4rem;
+    }
+
+    .emoji {
+      position: fixed;
+      top: -50px;
+      font-size: 2.5rem;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Do you agree?</h1>
-    <button id="yes">Yes</button>
-    <button id="no">No</button>
-  </div>
+<div class="container">
+  <h1>Kaoutar wach nti mkelkha?</h1>
+  <button id="yes">Ah</button>
+  <button id="no">La</button>
+</div>
 
-  <canvas id="confetti"></canvas>
+<div class="final" id="final">
+  <div class="final-text">hhhhhhhh nti mkelkha</div>
+</div>
 
-  <script>
-    const noBtn = document.getElementById("no");
-    const yesBtn = document.getElementById("yes");
-    const container = document.querySelector(".container");
+<audio id="laugh" src="https://www.myinstants.com/media/sounds/evil-laugh.mp3"></audio>
 
-    function moveNoButton() {
-      const maxX = window.innerWidth - noBtn.offsetWidth;
-      const maxY = window.innerHeight - noBtn.offsetHeight;
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const finalScreen = document.getElementById("final");
+  const laugh = document.getElementById("laugh");
 
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+  let speed = 1;
+  let scale = 1;
 
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+  function moveNo() {
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+  }
+
+  function panic() {
+    speed += 0.4;
+    scale -= 0.05;
+    noBtn.style.transform = `scale(${scale})`;
+
+    laugh.currentTime = 0;
+    laugh.play();
+
+    if (navigator.vibrate) {
+      navigator.vibrate(80);
     }
 
-    // Desktop panic
-    document.addEventListener("mousemove", (e) => {
-      const rect = noBtn.getBoundingClientRect();
-      const distance = Math.hypot(
-        e.clientX - (rect.left + rect.width / 2),
-        e.clientY - (rect.top + rect.height / 2)
-      );
-
-      if (distance < 120) {
-        moveNoButton();
-      }
-    });
-
-    // Mobile panic
-    noBtn.addEventListener("touchstart", moveNoButton);
-
-    // Confetti 🎉
-    const canvas = document.getElementById("confetti");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let confetti = [];
-
-    function createConfetti() {
-      confetti = Array.from({ length: 150 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        r: Math.random() * 6 + 4,
-        d: Math.random() * 150,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-        tilt: Math.random() * 10 - 10
-      }));
+    for (let i = 0; i < speed; i++) {
+      setTimeout(moveNo, i * 30);
     }
+  }
 
-    function drawConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confetti.forEach(c => {
-        ctx.beginPath();
-        ctx.fillStyle = c.color;
-        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-        ctx.fill();
-        c.y += Math.cos(c.d) + 4;
-      });
-    }
+  noBtn.addEventListener("mouseenter", panic);
+  noBtn.addEventListener("touchstart", panic);
 
-    yesBtn.onclick = () => {
-      createConfetti();
-      setInterval(drawConfetti, 20);
-      alert("Correct choice 😌🎉");
-    };
+  moveNo();
 
-    // Initial evil placement
-    moveNoButton();
-  </script>
+  // Taunt every 10 seconds
+  setInterval(() => {
+    const t = document.createElement("div");
+    t.className = "taunt";
+    t.innerText = "Wa jawbi khlas";
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  }, 10000);
+
+  // Emoji rain
+  function emojiRain() {
+    const e = document.createElement("div");
+    e.className = "emoji";
+    e.innerText = "😂";
+    e.style.left = Math.random() * 100 + "vw";
+    e.style.animationDuration = 2 + Math.random() * 3 + "s";
+    document.body.appendChild(e);
+    setTimeout(() => e.remove(), 5000);
+  }
+
+  yesBtn.onclick = () => {
+    finalScreen.style.display = "flex";
+    setInterval(emojiRain, 150);
+  };
+</script>
 
 </body>
 </html>
