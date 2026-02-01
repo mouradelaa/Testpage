@@ -7,7 +7,7 @@
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      height: 100svh;
       overflow: hidden;
       font-family: Arial, sans-serif;
       background: #0f0f0f;
@@ -38,6 +38,7 @@
       background: #2ecc71;
       color: black;
       margin-top: 40px;
+      z-index: 2;
     }
 
     #no {
@@ -53,18 +54,17 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 2.2rem;
-      opacity: 0.15;
+      opacity: 0.2;
       animation: fade 2s ease-in-out;
       pointer-events: none;
     }
 
     @keyframes fade {
       0% { opacity: 0; }
-      50% { opacity: 0.2; }
+      50% { opacity: 0.25; }
       100% { opacity: 0; }
     }
 
-    /* Final screen */
     .final {
       position: fixed;
       inset: 0;
@@ -74,22 +74,25 @@
       align-items: center;
       flex-direction: column;
       z-index: 10;
+      text-align: center;
     }
 
     .final-text {
       font-size: 2.4rem;
+      margin-bottom: 20px;
     }
 
     .emoji {
       position: fixed;
       top: -50px;
-      font-size: 2.5rem;
-      animation: fall linear infinite;
+      font-size: 3rem;
+      animation: fall linear forwards;
+      pointer-events: none;
     }
 
     @keyframes fall {
       to {
-        transform: translateY(110vh);
+        transform: translateY(120svh);
       }
     }
   </style>
@@ -104,40 +107,65 @@
 
 <div class="final" id="final">
   <div class="final-text">hhhhhhhh nti mkelkha</div>
+  <div style="font-size:3rem">😂🤣😂🤣😂🤣</div>
 </div>
-
-<audio id="laugh" src="https://www.myinstants.com/media/sounds/evil-laugh.mp3"></audio>
 
 <script>
   const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
   const finalScreen = document.getElementById("final");
-  const laugh = document.getElementById("laugh");
 
   let speed = 1;
   let scale = 1;
 
+  const darijaTaunts = [
+    "Wa jawbi khlas",
+    "Ash had la?",
+    "La la la ma tdirha",
+    "Hadi s3iba 3lik",
+    "Ah bayna mkelkha"
+  ];
+
+  function speakDarija(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ar-MA"; // Moroccan Arabic (fallbacks automatically)
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+
   function moveNo() {
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+    const safeWidth = window.innerWidth * 0.6;
+    const safeHeight = window.innerHeight * 0.5;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const x =
+      centerX - safeWidth / 2 +
+      Math.random() * (safeWidth - noBtn.offsetWidth);
+
+    const y =
+      centerY - safeHeight / 2 +
+      Math.random() * (safeHeight - noBtn.offsetHeight);
+
+    noBtn.style.left = Math.max(60, x) + "px";
+    noBtn.style.top = Math.max(80, y) + "px";
   }
 
   function panic() {
     speed += 0.4;
-    scale -= 0.05;
+    scale = Math.max(0.4, scale - 0.06);
     noBtn.style.transform = `scale(${scale})`;
 
-    laugh.currentTime = 0;
-    laugh.play();
+    const taunt = darijaTaunts[Math.floor(Math.random() * darijaTaunts.length)];
+    speakDarija(taunt);
 
-    if (navigator.vibrate) {
-      navigator.vibrate(80);
-    }
+    if (navigator.vibrate) navigator.vibrate(80);
 
     for (let i = 0; i < speed; i++) {
-      setTimeout(moveNo, i * 30);
+      setTimeout(moveNo, i * 25);
     }
   }
 
@@ -146,29 +174,33 @@
 
   moveNo();
 
-  // Taunt every 10 seconds
+  // Background taunt every 10 seconds (text + voice)
   setInterval(() => {
+    const text = "Wa jawbi khlas";
+
     const t = document.createElement("div");
     t.className = "taunt";
-    t.innerText = "Wa jawbi khlas";
+    t.innerText = text;
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 2000);
+
+    speakDarija(text);
   }, 10000);
 
-  // Emoji rain
   function emojiRain() {
     const e = document.createElement("div");
     e.className = "emoji";
-    e.innerText = "😂";
+    e.innerText = Math.random() > 0.5 ? "😂" : "🤣";
     e.style.left = Math.random() * 100 + "vw";
-    e.style.animationDuration = 2 + Math.random() * 3 + "s";
+    e.style.animationDuration = 2 + Math.random() * 2 + "s";
     document.body.appendChild(e);
-    setTimeout(() => e.remove(), 5000);
+    setTimeout(() => e.remove(), 4000);
   }
 
   yesBtn.onclick = () => {
     finalScreen.style.display = "flex";
-    setInterval(emojiRain, 150);
+    speakDarija("hhhhhhhh nti mkelkha");
+    setInterval(emojiRain, 120);
   };
 </script>
 
