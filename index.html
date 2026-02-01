@@ -1,3 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Evil Button</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      height: 100svh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 60px;
+      font-size: 1.9rem;
+    }
+
+    button {
+      font-size: 22px;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    #yes {
+      background: #2ecc71;
+      color: black;
+      margin-top: 40px;
+      z-index: 2;
+    }
+
+    #no {
+      position: absolute;
+      background: #e74c3c;
+      color: white;
+      transition: transform 0.15s;
+    }
+
+    .taunt {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      opacity: 0.25;
+      animation: fade 2s ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes fade {
+      0% { opacity: 0; }
+      50% { opacity: 0.3; }
+      100% { opacity: 0; }
+    }
+
+    /* Final screen */
+    .final {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10;
+      text-align: center;
+    }
+
+    .final-text {
+      font-size: 2.4rem;
+      margin-bottom: 20px;
+    }
+
+    .emoji {
+      position: fixed;
+      top: -50px;
+      font-size: 3rem;
+      animation: fall linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(120svh);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Kaoutar wach nti mkelkha?</h1>
+  <button id="yes">Ah</button>
+  <button id="no">La</button>
+</div>
+
+<div class="final" id="final">
+  <div class="final-text">hhhhhhhh nti mkelkha</div>
+  <div style="font-size:3rem">😂🤣😂🤣😂🤣</div>
+</div>
+
 <script>
   const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
@@ -5,31 +118,6 @@
 
   let speed = 1;
   let scale = 1;
-  let speaking = false;
-
-  const darijaTaunts = [
-    "Wa jawbi khlasss",
-    "Ash had laaa?",
-    "La la la, ma tdirhach",
-    "Sir sir, hadi s3iba 3lik",
-    "Bayna mkelkha"
-  ];
-
-  function speakDarija(text) {
-    if (speaking) return;
-
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "en-US";          // sounds MUCH better
-    utter.rate = 0.9;              // slower, clearer
-    utter.pitch = 0.8;             // less robotic
-    utter.volume = 1;
-
-    utter.onstart = () => speaking = true;
-    utter.onend = () => speaking = false;
-
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
-  }
 
   function moveNo() {
     const safeWidth = window.innerWidth * 0.6;
@@ -55,11 +143,7 @@
     scale = Math.max(0.4, scale - 0.06);
     noBtn.style.transform = `scale(${scale})`;
 
-    const taunt =
-      darijaTaunts[Math.floor(Math.random() * darijaTaunts.length)];
-    speakDarija(taunt);
-
-    if (navigator.vibrate) navigator.vibrate(80);
+    if (navigator.vibrate) navigator.vibrate(60);
 
     for (let i = 0; i < speed; i++) {
       setTimeout(moveNo, i * 25);
@@ -71,17 +155,13 @@
 
   moveNo();
 
-  // Every 10 seconds background taunt
+  // Background taunt every 10 seconds (TEXT ONLY)
   setInterval(() => {
-    const text = "Wa jawbi khlasss";
-
     const t = document.createElement("div");
     t.className = "taunt";
-    t.innerText = text;
+    t.innerText = "Wa jawbi khlas";
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 2000);
-
-    speakDarija(text);
   }, 10000);
 
   function emojiRain() {
@@ -96,7 +176,9 @@
 
   yesBtn.onclick = () => {
     finalScreen.style.display = "flex";
-    speakDarija("Hahahaha, nti mkelkha!");
     setInterval(emojiRain, 120);
   };
 </script>
+
+</body>
+</html>
